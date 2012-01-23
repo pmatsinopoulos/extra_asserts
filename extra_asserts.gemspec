@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = 'extra_asserts'
   s.rubygems_version = '1.8.6'
+  s.summary = %q{Extra ActiveSupport::TestCase assert methods for Rails 3.0.X projects}
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
