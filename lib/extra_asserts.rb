@@ -19,4 +19,31 @@ class ActiveSupport::TestCase
     end
   end
 
+  # It checks that the attribute +attribute+ of the model +class_name+
+  # is limited in storage by the value +length+
+  def assert_length_in_db(class_name, some_valid_attributes, attribute, length, destroy=false)
+    instance = class_name.new
+    some_valid_attributes.each do |attribute_name, attribute_value|
+      instance.send("#{attribute_name}=", attribute_value)
+    end
+
+    instance.send("#{attribute}=", "a" * (length + 1))
+    assert_raises ActiveRecord::StatementInvalid, "<#{class_name}>.<#{attribute}> with length #{length} seems to be ok" do
+      instance.save!(:validate => false)
+    end
+
+    instance.send("#{attribute}=", "a" * length)
+    assert instance.save(:validate => false)
+
+    instance.destroy if destroy
+  end
+
+  def assert_many_lengths_in_db(class_name, some_valid_attributes, attributes_lengths_hash)
+
+    attributes_lengths_hash.each do |attribute_name, length|
+      assert_length_in_db(class_name, some_valid_attributes, attribute_name, length, true)
+    end
+
+  end
+
 end
