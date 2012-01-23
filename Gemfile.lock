@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    extra_asserts (1.0.0)
+      activesupport (~> 3.0.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activesupport (3.0.11)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  extra_asserts!
