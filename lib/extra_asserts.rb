@@ -82,4 +82,25 @@ class ActiveSupport::TestCase
     end
   end
 
+  # Asserts that an instance is invalid, and optionally on a specific attribute with specific number of errors
+  #
+  # Example calls:
+  #   assert_invalid MyProduct
+  #   assert_invalid MyProduct, {:name => 1}
+  #
+  def assert_invalid(instance, errors_on)
+    assert !instance.valid?, "#{instance} expected to be invalid but it was valid"
+    errors_on.each do |k,v|
+      assert_equal v, instance.errors[k].size, "you expected #{v} errors on #{k} but there were #{instance.errors[k].size}"
+    end unless errors_on.nil?
+  end
+
+  # Asserts that a model has a valid attribute. The model itself may be invalid, but
+  # the method checks the errors only on the particular attribute
+  #
+  def assert_valid_attribute(instance, attribute)
+    instance.valid?
+    assert_equal 0, instance.errors[attribute.to_sym].size
+  end
+
 end
