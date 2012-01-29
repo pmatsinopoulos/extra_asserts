@@ -1,3 +1,5 @@
+require 'validator_attachment'
+
 class ActiveSupport::TestCase
 
   # Asserts that an attribute cannot be null in db.
@@ -49,12 +51,34 @@ class ActiveSupport::TestCase
   # Model-level related attributes
 
   def assert_presence_of_attribute(class_name, attribute)
-    assert ActiveModel::Validations::PresenceValidator.is_attached?(class_name, attribute)
+    assert ActiveModel::Validations::PresenceValidator.is_attached?(class_name, attribute.to_sym)
   end
 
   def assert_presence_of_many_attributes(class_name, attributes_array)
     attributes_array.each do |attribute_name|
       assert_presence_of_attribute(class_name, attribute_name)
+    end
+  end
+
+  # It checks that the attribute +attribute+ of the model +class_name+
+  # is limited in length by the value +length+
+  def assert_length_in_model(class_name, attribute, length)
+    assert ActiveModel::Validations::LengthValidator.is_attached?(class_name, attribute.to_sym, {:maximum => length})
+  end
+
+  def assert_many_lengths_in_model(class_name, attributes_lengths_hash)
+    attributes_lengths_hash.each do |attribute_name, length|
+      assert_length_in_model(class_name, attribute_name, length)
+    end
+  end
+
+  def assert_boolean_in_model(class_name, attribute)
+    assert ActiveModel::Validations::InclusionValidator.is_attached?(class_name, attribute.to_sym, {:in => [true, false]})
+  end
+
+  def assert_many_boolean_in_model(class_name, attributes)
+    attributes.each do |attribute|
+      assert_boolean_in_model(class_name, attribute)
     end
   end
 
