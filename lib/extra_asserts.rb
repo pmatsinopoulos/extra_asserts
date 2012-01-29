@@ -46,4 +46,16 @@ class ActiveSupport::TestCase
 
   end
 
+  # Model-level related attributes
+
+  def assert_presence_of_attribute(class_name, attribute)
+    assert ActiveModel::Validators::PresenceValidator.is_attached?(class_name, attribute)
+  end
+
+  def assert_presence_of_many_attributes(class_name, attributes_array)
+    attributes_array.each do |attribute_name|
+      assert_presence_of_attribute(class_name, attribute_name)
+    end
+  end
+
 end
