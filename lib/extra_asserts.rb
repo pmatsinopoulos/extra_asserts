@@ -21,6 +21,25 @@ class ActiveSupport::TestCase
     end
   end
 
+  # Asserts that an attribute can be null in db.
+  def assert_null_in_db(klass, valid_attributes, attribute, destroy=false)
+    instance = klass.new
+    valid_attributes.each do |attribute_name, attribute_value|
+      instance.send("#{attribute_name}=", attribute_value)
+    end
+
+    instance.send("#{attribute}=", nil)
+    assert instance.save(:validate => false)
+    # I delete this in order to be able to call this method from within assert_many...
+    instance.destroy if destroy
+  end
+
+  def assert_many_null_in_db(klass, valid_attributes, attributes_array)
+    attributes_array.each do |attribute_name|
+      assert_null_in_db(klass, valid_attributes, attribute_name, true)
+    end
+  end
+
   # It checks that the attribute +attribute+ of the model +class_name+
   # is limited in storage by the value +length+
   def assert_length_in_db(class_name, some_valid_attributes, attribute, length, destroy=false)
@@ -61,14 +80,14 @@ class ActiveSupport::TestCase
   end
 
   # It checks that the attribute +attribute+ of the model +class_name+
-  # is limited in length by the value +length+
-  def assert_length_in_model(class_name, attribute, length)
-    assert ActiveModel::Validations::LengthValidator.is_attached?(class_name, attribute.to_sym, {:maximum => length})
+  # has maximum length +length+
+  def assert_maximum_length_in_model(class_name, attribute, length)
+    assert ActiveModel::Validations::LengthValidator.is_attached?(class_name, attribute.to_sym, {:maximum => length}), "#{attribute} expected to have maximum length #{length} but it does not"
   end
 
-  def assert_many_lengths_in_model(class_name, attributes_lengths_hash)
+  def assert_many_maximum_lengths_in_model(class_name, attributes_lengths_hash)
     attributes_lengths_hash.each do |attribute_name, length|
-      assert_length_in_model(class_name, attribute_name, length)
+      assert_maximum_length_in_model(class_name, attribute_name, length)
     end
   end
 
